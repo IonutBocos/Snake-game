@@ -8,3 +8,98 @@ const boardBackground = 'white';
 const snakeColor = 'lightgreen';
 const snakeBorder = 'black';
 const foodColor = 'red';
+const unitSize = 25;
+let runing = false;
+let xVelocity = unitSize;
+let yVelocity = 0;
+let foodX;
+let foodY;
+let score = 0;
+let snake = [
+  { x: unitSize * 4, y: 0 },
+  { x: unitSize * 3, y: 0 },
+  { x: unitSize * 2, y: 0 },
+  { x: unitSize, y: 0 },
+  { x: 0, y: 0 },
+];
+
+window.addEventListener('keydown', changeDirection);
+resetBtn.addEventListener('click', resetGame);
+
+gameStart();
+
+function gameStart() {
+  runing = true;
+  scoreText.textContent = score;
+  createFood();
+  drowFood();
+  nextTick();
+}
+
+function nextTick() {
+  if (runing) {
+    setTimeout(() => {
+      clearBoard();
+      drowFood();
+      moveSnake();
+      drowSnake();
+      checkGameOver();
+      nextTick();
+    }, 75);
+  } else {
+    displayGameOver();
+  }
+}
+
+function clearBoard() {
+  ctx.fillStyle = boardBackground;
+  ctx.fillRect(0, 0, gameWidth, gameHeight);
+}
+
+function createFood() {
+  function randomFood(min, max) {
+    const randNum =
+      Math.round((Math.random() * (max - min) + min) / unitSize) * unitSize;
+    return randNum;
+  }
+
+  foodX = randomFood(0, gameWidth - unitSize);
+  foodY = randomFood(0, gameWidth - unitSize);
+}
+
+function drowFood() {
+  ctx.fillStyle = foodColor;
+  ctx.fillRect(foodX, foodY, unitSize, unitSize);
+}
+
+function moveSnake() {
+  const head = { x: snake[0].x + xVelocity, y: snake[0].y + yVelocity };
+
+  snake.unshift(head);
+
+  //if food is eaten
+  if (snake[0].x == foodX && snake[0].y == foodY) {
+    score += 1;
+    scoreText.textContent = score;
+    createFood();
+  } else {
+    snake.pop();
+  }
+}
+
+function drowSnake() {
+  ctx.fillStyle = snakeColor;
+  ctx.strokeStyle = snakeBorder;
+
+  snake.forEach((snakePart) => {
+    ctx.fillRect(snakePart.x, snakePart.y, unitSize, unitSize);
+    ctx.strokeRect(snakePart.x, snakePart.y, unitSize, unitSize);
+  });
+}
+function changeDirection(event) {
+  const keyPressed = event.keyCode;
+  console.log(keyPressed);
+}
+function checkGameOver() {}
+function displayGameOver() {}
+function resetGame() {}
