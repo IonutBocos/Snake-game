@@ -45,7 +45,7 @@ function nextTick() {
       drowSnake();
       checkGameOver();
       nextTick();
-    }, 75);
+    }, 90);
   } else {
     displayGameOver();
   }
@@ -85,6 +85,7 @@ function moveSnake() {
   } else {
     snake.pop();
   }
+  // else eliminate taile
 }
 
 function drowSnake() {
@@ -98,8 +99,83 @@ function drowSnake() {
 }
 function changeDirection(event) {
   const keyPressed = event.keyCode;
-  console.log(keyPressed);
+  const LEFT = 37;
+  const UP = 38;
+  const RIGHT = 39;
+  const DOWN = 40;
+
+  const goingUp = yVelocity == -unitSize;
+  const goingDown = yVelocity == unitSize;
+  const goingRight = xVelocity == unitSize;
+  const goingLeft = xVelocity == -unitSize;
+
+  switch (true) {
+    case keyPressed == LEFT && !goingRight:
+      xVelocity = -unitSize;
+      yVelocity = 0;
+      break;
+
+    case keyPressed == UP && !goingDown:
+      xVelocity = 0;
+      yVelocity = -unitSize;
+      break;
+
+    case keyPressed == RIGHT && !goingLeft:
+      xVelocity = unitSize;
+      yVelocity = 0;
+      break;
+
+    case keyPressed == DOWN && !goingUp:
+      xVelocity = 0;
+      yVelocity = unitSize;
+      break;
+  }
 }
-function checkGameOver() {}
-function displayGameOver() {}
-function resetGame() {}
+
+function checkGameOver() {
+  switch (true) {
+    case snake[0].x < 0:
+      runing = false;
+      break;
+
+    case snake[0].x >= gameWidth:
+      runing = false;
+      break;
+
+    case snake[0].y < 0:
+      runing = false;
+      break;
+
+    case snake[0].y >= gameHeight:
+      runing = false;
+      break;
+  }
+  for (let i = 1; i < snake.length; i += 1) {
+    if (snake[i].x == snake[0].x && snake[i].y == snake[0].y) {
+      runing = false;
+    }
+  }
+}
+
+function displayGameOver() {
+  ctx.font = '50px MV Boli';
+  ctx.fillStyle = 'black';
+  ctx.textAlign = 'center';
+  ctx.fillText('GAME OVER', gameWidth / 2, gameHeight / 2);
+  runing = false;
+}
+
+function resetGame() {
+  score = 0;
+  xVelocity = unitSize;
+  yVelocity = 0;
+
+  snake = [
+    { x: unitSize * 4, y: 0 },
+    { x: unitSize * 3, y: 0 },
+    { x: unitSize * 2, y: 0 },
+    { x: unitSize, y: 0 },
+    { x: 0, y: 0 },
+  ];
+  gameStart();
+}
